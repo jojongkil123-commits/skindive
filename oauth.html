@@ -1,10 +1,33 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Skindive</title>
+<title>스킨해루질 로그인</title>
+<style>
+  body { font-family: -apple-system, "Apple SD Gothic Neo", sans-serif; margin: 0;
+         min-height: 100vh; display: flex; align-items: center; justify-content: center;
+         background: linear-gradient(180deg, #03202f 0%, #0a4a73 100%); color: #fff; text-align: center; }
+  .card { padding: 40px 28px; }
+  .emoji { font-size: 64px; }
+  h1 { font-size: 24px; margin: 18px 0 10px; }
+  p { color: #bfe2ff; font-size: 15px; line-height: 1.6; margin: 0 0 24px; }
+  .btn { display: inline-block; padding: 14px 28px; border-radius: 14px; background: #03c75a;
+         color: #fff; text-decoration: none; font-weight: 700; font-size: 16px; }
+  .sub { margin-top: 14px; font-size: 12px; color: #7fb3d8; }
+</style>
 <script>
-  // 카카오/네이버 웹 OAuth 콜백 → 앱(haruzi://oauth)으로 코드 전달 (2026-07-22)
-  location.replace('haruzi://oauth' + location.search);
+  // 카카오/네이버 웹 OAuth 콜백 → 앱(haruzi://oauth)으로 인가 코드 전달 (2026-07-22)
+  // 2026-07-25 개선: 앱이 없는 환경(PC·검수 브라우저)에서 오류처럼 보이지 않도록
+  // 로그인 확인 안내 화면을 표시한다 (네이버 검수 반려 '서비스 설정 오류' 대응).
+  var appURL = 'haruzi://oauth' + location.search;
+  function openApp() { location.href = appURL; }
+  if (location.search.indexOf('code=') !== -1) { openApp(); }
 </script>
-<p style="font-family:-apple-system;text-align:center;margin-top:40vh;color:#555">
-  Skindive 앱으로 돌아갑니다…</p>
+<div class="card">
+  <div class="emoji">✅</div>
+  <h1>로그인이 확인되었습니다</h1>
+  <p>스킨해루질 앱에서 로그인이 자동으로 완료됩니다.<br>
+     앱으로 돌아가지 않으면 아래 버튼을 눌러주세요.</p>
+  <a class="btn" href="#" onclick="openApp();return false;">스킨해루질 앱 열기</a>
+  <div class="sub">앱이 설치되어 있지 않다면
+    <a href="https://apps.apple.com/kr/app/id6776101218" style="color:#9fd8ff">App Store에서 스킨해루질</a>을 설치해주세요.</div>
+</div>
