@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>스킨해루질 · 앱 다운로드</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:radial-gradient(120% 80% at 50% 8%, #123a52 0%, #0d3247 38%, #04121f 100%);
+    color:#e8f1f4;
+    font-family:-apple-system,"Apple SD Gothic Neo",sans-serif;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:32px 24px;
+  }
+  .mark{font-size:13px;letter-spacing:.34em;color:#f6b64a;margin-bottom:22px}
+  h1{font-size:clamp(30px,9vw,42px);font-weight:800;line-height:1.2}
+  p.sub{margin-top:14px;color:#8ba6b4;font-size:15px;line-height:1.7}
+  .cta{
+    display:inline-block;margin-top:34px;padding:17px 34px;border-radius:999px;
+    background:#f6b64a;color:#10202b;font-size:17px;font-weight:700;
+    text-decoration:none;box-shadow:0 10px 30px rgba(246,182,74,.28);
+  }
+  .hint{margin-top:26px;font-size:13px;line-height:1.7;color:#8ba6b4;max-width:19em}
+  .hint b{color:#e8f1f4}
+  footer{margin-top:40px;font-size:12px;color:#54707e}
+</style>
+</head>
+<body>
+<div class="mark">SKINDIVE</div>
+<h1>스킨해루질</h1>
+<p class="sub">애플워치와 함께하는<br>프리다이빙 · 해루질 기록 앱</p>
+<a class="cta" id="go" href="https://apps.apple.com/kr/app/id6776101218">App Store에서 받기</a>
+<p class="hint">버튼을 눌러도 열리지 않으면 오른쪽 위 <b>···</b> → <b>Safari에서 열기</b>를 눌러 주세요.</p>
+<footer>iPhone · iPad · Apple Watch</footer>
+<script>
+  var NATIVE="itms-apps://apps.apple.com/kr/app/id6776101218";
+  var isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
+  if(isIOS){
+    document.getElementById("go").setAttribute("href",NATIVE);
+    setTimeout(function(){window.location.href=NATIVE;},400);
+  }
+</script>
+</body>
+</html>
