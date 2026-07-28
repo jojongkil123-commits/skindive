@@ -20,10 +20,14 @@
   .cta{
     display:inline-block;margin-top:34px;padding:17px 34px;border-radius:999px;
     background:#f6b64a;color:#10202b;font-size:17px;font-weight:700;
-    text-decoration:none;box-shadow:0 10px 30px rgba(246,182,74,.28);
+    text-decoration:none;box-shadow:0 10px 30px rgba(246,74,74,0), 0 10px 30px rgba(246,182,74,.28);
   }
-  .hint{margin-top:26px;font-size:13px;line-height:1.7;color:#8ba6b4;max-width:19em}
-  .hint b{color:#e8f1f4}
+  .alt{
+    display:inline-block;margin-top:16px;padding:13px 26px;border-radius:999px;
+    border:1px solid #2c4f63;color:#e8f1f4;font-size:15px;text-decoration:none;
+  }
+  .hint{margin-top:30px;font-size:14px;line-height:1.8;color:#c7d8e0;max-width:20em}
+  .hint b{color:#f6b64a}
   footer{margin-top:40px;font-size:12px;color:#54707e}
 </style>
 </head>
@@ -31,27 +35,12 @@
 <div class="mark">SKINDIVE</div>
 <h1>스킨해루질</h1>
 <p class="sub">애플워치와 함께하는<br>프리다이빙 · 해루질 기록 앱</p>
-<a class="cta" id="go" href="https://apps.apple.com/kr/app/id6776101218">App Store에서 받기</a>
-<p class="hint">버튼을 눌러도 열리지 않으면 오른쪽 위 <b>···</b> → <b>Safari에서 열기</b>를 눌러 주세요.</p>
-<footer>iPhone · iPad · Apple Watch</footer>
-<script>
-  var STORE = "apps.apple.com/kr/app/id6776101218";
-  var ua = navigator.userAgent;
-  var isIOS = /iPhone|iPad|iPod/.test(ua);
-  var isInApp = /Instagram|FBAN|FBAV|Threads/i.test(ua);
-  var go = document.getElementById("go");
 
-  if (isIOS && isInApp) {
-    // 인앱 브라우저: 사파리를 강제로 열어 앱스토어로 이동 (iOS 17+)
-    var esc = "x-safari-https://" + STORE;
-    go.setAttribute("href", esc);
-    window.location.href = esc;
-  } else if (isIOS) {
-    // 일반 사파리: 앱스토어 앱 바로 열기
-    var native = "itms-apps://" + STORE;
-    go.setAttribute("href", native);
-    setTimeout(function(){ window.location.href = native; }, 300);
-  }
-</script>
+<a class="cta" href="https://apps.apple.com/kr/app/id6776101218">App Store에서 받기</a>
+<a class="alt" href="itms-apps://apps.apple.com/kr/app/id6776101218">앱스토어 앱으로 바로 열기</a>
+
+<p class="hint">두 버튼 모두 안 되면<br>오른쪽 위 <b>···</b> 메뉴 → <b>외부 브라우저에서 열기</b><br>를 눌러 주세요. 바로 열립니다.</p>
+
+<footer>iPhone · iPad · Apple Watch</footer>
 </body>
 </html>
