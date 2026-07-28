@@ -35,11 +35,22 @@
 <p class="hint">버튼을 눌러도 열리지 않으면 오른쪽 위 <b>···</b> → <b>Safari에서 열기</b>를 눌러 주세요.</p>
 <footer>iPhone · iPad · Apple Watch</footer>
 <script>
-  var NATIVE="itms-apps://apps.apple.com/kr/app/id6776101218";
-  var isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
-  if(isIOS){
-    document.getElementById("go").setAttribute("href",NATIVE);
-    setTimeout(function(){window.location.href=NATIVE;},400);
+  var STORE = "apps.apple.com/kr/app/id6776101218";
+  var ua = navigator.userAgent;
+  var isIOS = /iPhone|iPad|iPod/.test(ua);
+  var isInApp = /Instagram|FBAN|FBAV|Threads/i.test(ua);
+  var go = document.getElementById("go");
+
+  if (isIOS && isInApp) {
+    // 인앱 브라우저: 사파리를 강제로 열어 앱스토어로 이동 (iOS 17+)
+    var esc = "x-safari-https://" + STORE;
+    go.setAttribute("href", esc);
+    window.location.href = esc;
+  } else if (isIOS) {
+    // 일반 사파리: 앱스토어 앱 바로 열기
+    var native = "itms-apps://" + STORE;
+    go.setAttribute("href", native);
+    setTimeout(function(){ window.location.href = native; }, 300);
   }
 </script>
 </body>
