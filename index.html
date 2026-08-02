@@ -1,29 +1,306 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Skindive — 프리다이빙·해루질 기록</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스킨해루질 — 프리다이빙·해루질 기록 앱</title>
+<meta name="description" content="애플워치로 잠수를 기록하고, 물때와 바다를 읽고, 조과를 남기세요. 스킨다이빙과 해루질을 사랑하는 다이버가 직접 만든 앱.">
+<meta name="theme-color" content="#030A11">
+<meta property="og:title" content="스킨해루질 — 프리다이빙·해루질 기록 앱">
+<meta property="og:description" content="애플워치 잠수 기록, 물때·파고·수온 예보, 출조 로그와 조과 통계까지. App Store에서 무료 다운로드.">
+<meta property="og:url" content="https://jojongkil123-commits.github.io/skindive/">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif;max-width:720px;margin:0 auto;padding:24px;line-height:1.7;color:#e8f2f6;background:#071a26}
-h1{font-size:1.7rem;color:#7fd8f0}
-a{color:#7fd8f0}
-.card{background:#0d2635;border-radius:14px;padding:20px;margin:16px 0}
-h2{font-size:1.05rem;color:#9fe3f5;margin-top:0}
-.muted{color:#7f99a6;font-size:.85rem}
+  :root{
+    --ink:#E9F2F4;
+    --dim:#9DB4BE;
+    --faint:#5E7783;
+    --lantern:#FFB84D;
+    --lantern-deep:#E8932B;
+    --seaglass:#6FD3C7;
+    --line:rgba(159,196,207,.16);
+    --rail:rgba(159,196,207,.28);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"IBM Plex Sans KR",-apple-system,"Apple SD Gothic Neo",sans-serif;
+    color:var(--ink);
+    background:linear-gradient(180deg,
+      #10293C 0%,
+      #0B1E2E 14%,
+      #071523 38%,
+      #04101B 66%,
+      #030A11 100%);
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:rgba(255,184,77,.3)}
+  a{color:inherit}
+
+  .wrap{max-width:640px;margin:0 auto;padding:0 24px 0 44px;position:relative}
+
+  /* ── 수심 눈금 레일: 스크롤 = 하강 ── */
+  .wrap::before{
+    content:"";
+    position:absolute;top:0;bottom:0;left:24px;width:1px;
+    background:linear-gradient(180deg,transparent 0,var(--rail) 60px,var(--rail) calc(100% - 200px),transparent 100%);
+  }
+  .depth{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:.72rem;letter-spacing:.22em;
+    color:var(--faint);
+    display:flex;align-items:center;gap:12px;
+    margin:0 0 18px -28px;
+    text-transform:uppercase;
+  }
+  .depth::before{
+    content:"";width:15px;height:1px;background:var(--rail);flex:none;
+  }
+  .depth b{color:var(--seaglass);font-weight:500}
+
+  /* ── 수면(히어로) ── */
+  header{
+    min-height:92svh;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:96px 0 72px;
+    position:relative;
+  }
+  header::before{ /* 수면 위 달빛 */
+    content:"";position:absolute;inset:-40% 0 auto;height:70%;
+    background:radial-gradient(ellipse 150% 55% at 50% 0%,rgba(146,197,222,.14),transparent 70%);
+    pointer-events:none;
+  }
+  h1{
+    font-family:"Hahmlet",serif;font-weight:800;
+    font-size:clamp(2.7rem,13vw,4.6rem);
+    line-height:1.12;letter-spacing:-.015em;
+    margin-bottom:14px;
+  }
+  .sub{
+    font-family:"Hahmlet",serif;font-weight:500;
+    color:var(--seaglass);
+    font-size:clamp(1.02rem,4.2vw,1.25rem);
+    letter-spacing:.04em;
+    margin-bottom:22px;
+  }
+  .lede{color:var(--dim);font-size:1.02rem;max-width:34ch;margin-bottom:36px}
+  .lede strong{color:var(--ink);font-weight:600}
+
+  /* ── 랜턴 버튼 ── */
+  .cta{
+    position:relative;display:inline-flex;align-items:center;gap:10px;
+    font-weight:600;font-size:1.05rem;letter-spacing:-.01em;
+    color:#1A1206;text-decoration:none;
+    background:linear-gradient(180deg,var(--lantern),var(--lantern-deep));
+    border-radius:999px;padding:16px 30px;
+    box-shadow:0 0 0 1px rgba(255,184,77,.35),0 6px 28px rgba(232,147,43,.28),0 0 44px 6px rgba(255,184,77,.13);
+    animation:lantern 4.5s ease-in-out infinite; /* 랜턴 광원 */
+  }
+  .cta svg{width:17px;height:17px;flex:none}
+  .cta:active{transform:translateY(1px)}
+  @keyframes lantern{
+    0%,100%{box-shadow:0 0 0 1px rgba(255,184,77,.35),0 6px 28px rgba(232,147,43,.28),0 0 44px 6px rgba(255,184,77,.13)}
+    50%{box-shadow:0 0 0 1px rgba(255,184,77,.45),0 6px 30px rgba(232,147,43,.36),0 0 72px 16px rgba(255,184,77,.26)}
+  }
+  .cta-note{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:.74rem;letter-spacing:.14em;color:var(--faint);
+    margin-top:20px;
+  }
+
+  /* ── 워치 게이지 스트립 ── */
+  .gauge{
+    margin-top:56px;
+    display:flex;gap:0;
+    border:1px solid var(--line);border-radius:14px;
+    background:rgba(4,13,20,.5);
+    overflow:hidden;
+  }
+  .gauge div{
+    flex:1;padding:14px 6px 12px;text-align:center;
+    border-left:1px solid var(--line);
+  }
+  .gauge div:first-child{border-left:none}
+  .gauge .v{
+    font-family:"IBM Plex Mono",monospace;
+    font-size:clamp(1.05rem,4.6vw,1.3rem);font-weight:500;
+    color:var(--ink);display:block;line-height:1.3;
+  }
+  .gauge .k{
+    font-size:.68rem;letter-spacing:.16em;color:var(--faint);
+    text-transform:uppercase;
+  }
+  .gauge .v em{font-style:normal;color:var(--seaglass);font-size:.8em}
+
+  /* ── 기능 섹션 ── */
+  section{padding:64px 0}
+  h2{
+    font-family:"Hahmlet",serif;font-weight:700;
+    font-size:clamp(1.55rem,6.4vw,2.05rem);
+    letter-spacing:-.01em;line-height:1.3;
+    margin-bottom:14px;
+  }
+  section p{color:var(--dim);max-width:38ch}
+  section p strong{color:var(--ink);font-weight:600}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;list-style:none}
+  .chips li{
+    font-size:.86rem;color:var(--dim);
+    border:1px solid var(--line);border-radius:999px;
+    padding:6px 14px;background:rgba(9,22,32,.45);
+  }
+  .chips li b{color:var(--seaglass);font-weight:500}
+
+  /* ── 바닥: 랜턴을 찾았다 ── */
+  .floor{
+    padding:96px 0 72px;text-align:left;position:relative;
+  }
+  .floor blockquote{
+    font-family:"Hahmlet",serif;font-weight:500;
+    font-size:clamp(1.15rem,5vw,1.5rem);line-height:1.65;
+    max-width:26ch;margin-bottom:12px;
+  }
+  .floor blockquote span{color:var(--lantern)}
+  .floor .who{color:var(--faint);font-size:.9rem;margin-bottom:44px}
+  footer{
+    padding:0 0 56px;
+    color:var(--faint);font-size:.8rem;
+  }
+  footer .wrap{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+  footer a{color:var(--dim);text-decoration:none;border-bottom:1px solid var(--line)}
+
+  /* 등장 모션 */
+  .rise{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
+  .rise.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .rise{opacity:1;transform:none;transition:none}
+    .cta{animation:none}
+    html{scroll-behavior:auto}
+  }
+  a:focus-visible,.cta:focus-visible{outline:2px solid var(--seaglass);outline-offset:3px}
 </style>
 </head>
 <body>
-<h1>🤿 Skindive</h1>
-<p>애플워치와 함께하는 프리다이빙·스킨 해루질 기록 앱.<br>수심·심박수 기록, 물때·파고 예보, 야간 안전 도구, 버디 찾기까지.</p>
-<div class="card">
-<h2>지원 문의</h2>
-<p>앱 사용 중 문제나 제안이 있으면 메일 주세요.<br><a href="mailto:jojongkil123@gmail.com">jojongkil123@gmail.com</a></p>
+
+<div class="wrap">
+
+  <header>
+    <p class="depth">수면 <b>0 M</b></p>
+    <h1>스킨해루질</h1>
+    <p class="sub">프리다이빙 · 해루질 기록 앱</p>
+    <p class="lede"><strong>애플워치로 잠수를 기록</strong>하고, 물때와 바다를 읽고, 오늘의 조과를 남기세요.</p>
+    <div>
+      <a class="cta" href="https://apps.apple.com/kr/app/id6776101218">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 21h16" stroke="#1A1206" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        App Store에서 무료 다운로드
+      </a>
+    </div>
+    <p class="cta-note">iPhone · iPad · Apple Watch · 무료</p>
+
+    <div class="gauge" aria-label="애플워치 잠수 기록 예시">
+      <div><span class="v">-8.2<em>m</em></span><span class="k">수심</span></div>
+      <div><span class="v">01:24</span><span class="k">잠수시간</span></div>
+      <div><span class="v">62<em>bpm</em></span><span class="k">심박수</span></div>
+      <div><span class="v">7물</span><span class="k">물때</span></div>
+    </div>
+  </header>
+
+  <section class="rise">
+    <p class="depth">수심 <b>-4 M</b> · 잠수 기록</p>
+    <h2>손목이 알아서<br>기록합니다</h2>
+    <p>애플워치가 <strong>수심·잠수 시간·심박수</strong>를 자동으로 남기고, 하강과 상승을 실시간으로 보여줍니다. 올라오면 수면 회복 타이머(1:2 룰)가 다음 입수까지 지켜줍니다.</p>
+    <ul class="chips">
+      <li>하강/상승 실시간 표시</li>
+      <li>수면 회복 타이머 <b>1:2</b></li>
+      <li>수중 잠금 자동 전환</li>
+      <li>동작 버튼 잠수 시작</li>
+    </ul>
+  </section>
+
+  <section class="rise">
+    <p class="depth">수심 <b>-8 M</b> · 바다 정보</p>
+    <h2>들어가기 전에<br>바다를 먼저 읽습니다</h2>
+    <p>위성 지도 위에 <strong>파고·바람·수심해도·어장</strong>을 겹쳐 보고, 지점별 16일 예보로 파고·수온·물색과 입수 판정까지 확인합니다. 물때와 간조·만조, 풍랑특보 알림도 놓치지 않습니다.</p>
+    <ul class="chips">
+      <li>지점별 <b>16일</b> 예보</li>
+      <li>물때 · 간조/만조</li>
+      <li>수심해도 · 어장 레이어</li>
+      <li>풍랑특보 알림</li>
+    </ul>
+  </section>
+
+  <section class="rise">
+    <p class="depth">수심 <b>-12 M</b> · 기록과 공유</p>
+    <h2>오늘의 물질을<br>한 장에 담습니다</h2>
+    <p>출조별 다이브 로그에 <strong>이동 경로와 수심 그래프, 조과</strong>가 쌓입니다. 사진 위에 기록을 얹은 랜턴 연출 공유 카드로 남기고, 어종·시즌·물때별 통계로 나의 바다를 돌아봅니다.</p>
+    <ul class="chips">
+      <li>이동 경로 · 수심 그래프</li>
+      <li>랜턴 연출 공유 카드</li>
+      <li>어종·시즌·물때별 통계</li>
+    </ul>
+  </section>
+
+  <section class="rise">
+    <p class="depth">수심 <b>-16 M</b> · 안전 도구</p>
+    <h2>밤바다에서는<br>안전이 먼저입니다</h2>
+    <p>나침반 되짚기와 백트랙으로 들어온 길을 되돌아 나오고, <strong>SOS 사이렌과 긴급연락처 원탭</strong>이 만일에 대비합니다. 입수 전 해변 CCTV로 현장도 확인하세요.</p>
+    <ul class="chips">
+      <li>나침반 되짚기 · 백트랙</li>
+      <li>SOS 사이렌 · 손전등</li>
+      <li>긴급연락처 원탭</li>
+      <li>해변 CCTV</li>
+    </ul>
+  </section>
+
+  <section class="rise">
+    <p class="depth">수심 <b>-20 M</b> · 버디 찾기</p>
+    <h2>혼자보다<br>둘이 안전합니다</h2>
+    <p><strong>지역·시간·성향</strong>으로 나와 맞는 해루질 버디를 찾고, 소모임과 쪽지로 다음 출조를 함께 준비합니다.</p>
+    <ul class="chips">
+      <li>버디 매칭</li>
+      <li>소모임</li>
+      <li>쪽지 · 실시간 알림</li>
+    </ul>
+  </section>
+
+  <div class="floor rise">
+    <p class="depth">바닥 <b>-24 M</b></p>
+    <blockquote>스킨다이빙과 해루질을 사랑하는 다이버가 직접 만들었습니다.<br><span>안전한 입수, 즐거운 물질 되세요.</span></blockquote>
+    <p class="who">— 개발자 드림</p>
+    <div>
+      <a class="cta" href="https://apps.apple.com/kr/app/id6776101218">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 21h16" stroke="#1A1206" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        App Store에서 무료 다운로드
+      </a>
+    </div>
+    <p class="cta-note">iOS 18.0 이상 · 한국어 · English</p>
+  </div>
+
 </div>
-<div class="card">
-<h2>문서</h2>
-<p><a href="privacy.html">개인정보처리방침</a></p>
-</div>
-<p class="muted">ⓒ 2026 Skindive</p>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Skindive</span>
+    <a href="./privacy.html">개인정보 처리방침</a>
+    <a href="mailto:jojongkil123@gmail.com">지원 문의</a>
+    <a href="https://apps.apple.com/kr/app/id6776101218">App Store</a>
+  </div>
+</footer>
+
+<script>
+  if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window){
+    const io=new IntersectionObserver(es=>es.forEach(e=>{
+      if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}
+    }),{threshold:.12});
+    document.querySelectorAll('.rise').forEach(el=>io.observe(el));
+  }else{
+    document.querySelectorAll('.rise').forEach(el=>el.classList.add('in'));
+  }
+</script>
+
 </body>
 </html>
